@@ -53,6 +53,28 @@ public sealed class NotesApiTests(WebApplicationFactory<Program> factory) : ICla
     }
 
     [Fact]
+    public async Task DeleteNote_Existing_ReturnsNoContent_ThenGetReturnsNotFound()
+    {
+        HttpResponseMessage created = await _client.PostAsJsonAsync("/notes", new CreateNoteRequest("Xóa tôi", null));
+        Note? note = await created.Content.ReadFromJsonAsync<Note>();
+        Assert.NotNull(note);
+
+        HttpResponseMessage deleted = await _client.DeleteAsync($"/notes/{note.Id}");
+
+        Assert.Equal(HttpStatusCode.NoContent, deleted.StatusCode);
+        HttpResponseMessage fetched = await _client.GetAsync($"/notes/{note.Id}");
+        Assert.Equal(HttpStatusCode.NotFound, fetched.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteNote_Unknown_ReturnsNotFound()
+    {
+        HttpResponseMessage response = await _client.DeleteAsync($"/notes/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task GetNote_Unknown_ReturnsNotFound()
     {
         HttpResponseMessage response = await _client.GetAsync($"/notes/{Guid.NewGuid()}");
