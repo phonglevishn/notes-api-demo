@@ -20,6 +20,8 @@ public sealed class NoteStore
 
     public Note? Find(Guid id) => _notes.GetValueOrDefault(id);
 
+    public bool Remove(Guid id) => _notes.TryRemove(id, out _);
+
     public IReadOnlyList<Note> List() => [.. _notes.Values.OrderBy(n => n.CreatedAt)];
 }
 
@@ -35,6 +37,9 @@ public static class NoteEndpoints
 
         app.MapGet("/notes/{id:guid}", (Guid id, NoteStore store) =>
             store.Find(id) is { } note ? Results.Ok(note) : Results.NotFound());
+
+        app.MapDelete("/notes/{id:guid}", (Guid id, NoteStore store) =>
+            store.Remove(id) ? Results.NoContent() : Results.NotFound());
 
         app.MapPost("/notes", (CreateNoteRequest request, NoteStore store) =>
         {

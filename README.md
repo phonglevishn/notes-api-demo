@@ -16,6 +16,7 @@ dotnet run --project src/NotesApi
 | GET | `/notes` | Danh sách ghi chú, cũ trước |
 | GET | `/notes/{id}` | Một ghi chú, 404 nếu không có |
 | POST | `/notes` | Tạo ghi chú `{ "title": "...", "body": "..." }`; `title` bắt buộc, tối đa 100 ký tự; 201 hoặc 400 |
+| DELETE | `/notes/{id}` | Xóa một ghi chú; 204, hoặc 404 nếu không có |
 
 ## Build và test
 
